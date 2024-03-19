@@ -11,7 +11,7 @@ import fs from "fs";
 
 import defaultCSRConfig from "../templates/csr_template";
 import API from "../api";
-import { ZATCASimplifiedTaxInvoice } from "../ZATCASimplifiedTaxInvoice";
+import { ZATCAInvoice } from "../ZATCASimplifiedTaxInvoice";
 
 export interface EGSUnitLocation {
     city: string,
@@ -20,6 +20,20 @@ export interface EGSUnitLocation {
     plot_identification: string,
     building: string,
     postal_zone: string
+}
+
+export interface EGSUnitCustomerInfo {
+    city?: string;
+    city_subdivision?: string;
+    street?: string;
+    additional_street?: string;
+    plot_identification?: string;
+    building?: string;
+    postal_zone?: string;
+    country_sub_entity?: string;
+    buyer_name?: string;
+    customer_crn_number?: string;
+    vat_number?: string;
 }
 
 export interface EGSUnitInfo {
@@ -32,7 +46,7 @@ export interface EGSUnitInfo {
     branch_name: string,
     branch_industry: string,
     location: EGSUnitLocation,
-
+    customer_info?: EGSUnitCustomerInfo,
     private_key?: string,
     csr?: string,
     compliance_certificate?: string,
@@ -126,9 +140,9 @@ export class EGS {
     private egs_info: EGSUnitInfo;
     private api: API;
 
-    constructor(egs_info: EGSUnitInfo) {
+    constructor(egs_info: EGSUnitInfo, env: "production" | "simulation" | "development" = "development") {
         this.egs_info = egs_info;
-        this.api = new API();
+        this.api = new API(env);
     }
 
 
@@ -232,12 +246,28 @@ export class EGS {
     }
 
     /**
+     * Reports invoice with ZATCA API.
+     * @param signed_invoice_string String.
+     * @param invoice_hash String.
+     * @returns Promise reporting data on success, throws error on fail.
+     */
+    async clearanceInvoice(signed_invoice_string: string, invoice_hash: string): Promise<any> {
+        if(!this.egs_info.production_certificate || !this.egs_info.production_api_secret) throw new Error("EGS is missing a certificate/private key/api secret to report the invoice.")
+
+        return await this.api.production(this.egs_info.production_certificate, this.egs_info.production_api_secret).clearanceInvoice(
+            signed_invoice_string,
+            invoice_hash,
+            this.egs_info.uuid
+        );
+    }
+
+    /**
      * Signs a given invoice using the EGS certificate and keypairs.
      * @param invoice Invoice to sign
      * @param production Boolean production or compliance certificate.
      * @returns Promise void on success (signed_invoice_string: string, invoice_hash: string, qr: string), throws error on fail.
      */
-    signInvoice(invoice: ZATCASimplifiedTaxInvoice, production?: boolean): {signed_invoice_string: string, invoice_hash: string, qr: string} {
+    signInvoice(invoice: ZATCAInvoice, production?: boolean): {signed_invoice_string: string, invoice_hash: string, qr: string} {
         const certificate = production ? this.egs_info.production_certificate : this.egs_info.compliance_certificate;
         if (!certificate || !this.egs_info.private_key) throw new Error("EGS is missing a certificate/private key to sign the invoice.");
 

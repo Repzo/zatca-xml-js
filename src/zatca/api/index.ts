@@ -4,9 +4,10 @@ import { cleanUpCertificateString } from "../signing";
 
 const settings = {
     API_VERSION: "V2",
-    SANDBOX_BASEURL: "https://gw-apic-gov.gazt.gov.sa/e-invoicing/developer-portal",
-    PRODUCTION_BASEURL: "TODO"
-}
+    SANDBOX_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal",
+    SIMULATION_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/simulation",
+    PRODUCTION_BASEURL: "https://gw-fatoora.zatca.gov.sa/e-invoicing/core",
+};
 
 interface ComplianceAPIInterface {
     /**
@@ -44,13 +45,22 @@ interface ProductionAPIInterface {
      * @returns Any status.
      */
       reportInvoice: (signed_xml_string: string, invoice_hash: string, egs_uuid: string) => Promise<any>
-
+    /**
+    * Report signed ZATCA XML.
+    * @param signed_xml_string String.
+    * @param invoice_hash String.
+    * @param egs_uuid String.
+    * @returns Any status.
+    */
+    clearanceInvoice: (signed_xml_string: string, invoice_hash: string, egs_uuid: string) => Promise<any>;
 }
 
 
-class API {
+class API { 
+    private env: string;
 
-    constructor () {
+    constructor(env: "production" | "simulation" | "development") {
+      this.env = env;
     }
 
 
@@ -68,6 +78,12 @@ class API {
 
     compliance(certificate?: string, secret?: string): ComplianceAPIInterface {
         const auth_headers = this.getAuthHeaders(certificate, secret);
+        const base_url =
+          this.env == "production"
+          ? settings.PRODUCTION_BASEURL
+          : this.env == "simulation"
+          ? settings.SIMULATION_BASEURL
+          : settings.SANDBOX_BASEURL;
 
         const issueCertificate = async (csr: string, otp: string): Promise<{issued_certificate: string, api_secret: string, request_id: string}> => {
             const headers = {
@@ -75,14 +91,14 @@ class API {
                 OTP: otp
             };
 
-            const response = await axios.post(`${settings.SANDBOX_BASEURL}/compliance`,
+            const response = await axios.post(`${base_url}/compliance`,
                 {csr: Buffer.from(csr).toString("base64")},
                 {headers: {...auth_headers, ...headers}}
             );
                         
             if (response.status != 200) throw new Error("Error issuing a compliance certificate.");
 
-            let issued_certificate = new Buffer(response.data.binarySecurityToken, "base64").toString();
+            let issued_certificate = Buffer.from(response.data.binarySecurityToken, "base64").toString();
             issued_certificate = `-----BEGIN CERTIFICATE-----\n${issued_certificate}\n-----END CERTIFICATE-----`;
             const api_secret = response.data.secret;
 
@@ -95,7 +111,7 @@ class API {
                 "Accept-Language": "en",
             };
 
-            const response = await axios.post(`${settings.SANDBOX_BASEURL}/compliance/invoices`,
+            const response = await axios.post(`${base_url}/compliance/invoices`,
                 {
                     invoiceHash: invoice_hash,
                     uuid: egs_uuid,
@@ -104,7 +120,7 @@ class API {
                 {headers: {...auth_headers, ...headers}}
             );
                         
-            if (response.status != 200) throw new Error("Error in compliance check.");
+            if (response.status != 200 && response.status != 202) throw new Error("Error in compliance check.");
             return response.data;
         }
         
@@ -117,20 +133,26 @@ class API {
 
     production(certificate?: string, secret?: string): ProductionAPIInterface {
         const auth_headers = this.getAuthHeaders(certificate, secret);
+        const base_url =
+          this.env == "production"
+          ? settings.PRODUCTION_BASEURL
+          : this.env == "simulation"
+          ? settings.SIMULATION_BASEURL
+          : settings.SANDBOX_BASEURL;
 
         const issueCertificate = async (compliance_request_id: string): Promise<{issued_certificate: string, api_secret: string, request_id: string}> => {
             const headers = {
                 "Accept-Version": settings.API_VERSION
             };
 
-            const response = await axios.post(`${settings.SANDBOX_BASEURL}/production/csids`,
+            const response = await axios.post(`${base_url}/production/csids`,
                 {compliance_request_id: compliance_request_id},
                 {headers: {...auth_headers, ...headers}}
             );
                         
             if (response.status != 200) throw new Error("Error issuing a production certificate.");
 
-            let issued_certificate = new Buffer(response.data.binarySecurityToken, "base64").toString();
+            let issued_certificate = Buffer.from(response.data.binarySecurityToken, "base64").toString();
             issued_certificate = `-----BEGIN CERTIFICATE-----\n${issued_certificate}\n-----END CERTIFICATE-----`;
             const api_secret = response.data.secret;
 
@@ -144,7 +166,7 @@ class API {
                 "Clearance-Status": "0"
             };
 
-            const response = await axios.post(`${settings.SANDBOX_BASEURL}/invoices/reporting/single`,
+            const response = await axios.post(`${base_url}/invoices/reporting/single`,
                 {
                     invoiceHash: invoice_hash,
                     uuid: egs_uuid,
@@ -157,9 +179,29 @@ class API {
             return response.data;
         }
 
+        const clearanceInvoice = async (signed_xml_string: string, invoice_hash: string, egs_uuid: string): Promise<any> => {
+            const headers = {
+                "Accept-Version": settings.API_VERSION,
+                "Accept-Language": "en",
+                "Clearance-Status": "1",
+            };
+
+            const response = await axios.post(`${base_url}/invoices/clearance/single`,
+              {
+                  invoiceHash: invoice_hash,
+                  uuid: egs_uuid,
+                  invoice: Buffer.from(signed_xml_string).toString("base64"),
+              },
+              { headers: { ...auth_headers, ...headers } }
+          );
+
+          if (response.status != 200) throw new Error("Error in clearance invoice.");
+          return response.data;
+      }
         return {
             issueCertificate,
-            reportInvoice
+            reportInvoice,
+            clearanceInvoice
         }
     }
   
