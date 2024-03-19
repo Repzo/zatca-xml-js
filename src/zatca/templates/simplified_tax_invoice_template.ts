@@ -1,3 +1,4 @@
+import { render } from "mustache";
 import { EGSUnitInfo } from "../egs";
 import defaultBillingReference from "./invoice_billing_reference_template";
 
@@ -14,22 +15,28 @@ const template = /* XML */`
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"><ext:UBLExtensions>SET_UBL_EXTENSIONS_STRING</ext:UBLExtensions>
     
     <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
-    <cbc:ID>SET_INVOICE_SERIAL_NUMBER</cbc:ID>
-    <cbc:UUID>SET_TERMINAL_UUID</cbc:UUID>
-    <cbc:IssueDate>SET_ISSUE_DATE</cbc:IssueDate>
-    <cbc:IssueTime>SET_ISSUE_TIME</cbc:IssueTime>
-    <cbc:InvoiceTypeCode name="0211010">SET_INVOICE_TYPE</cbc:InvoiceTypeCode>
+    <cbc:ID>{{{invoice_serial_number}}}</cbc:ID>
+    <cbc:UUID>{{{egs_info.uuid}}}</cbc:UUID>
+    <cbc:IssueDate>{{{issue_date}}}</cbc:IssueDate>
+    <cbc:IssueTime>{{{issue_time}}}</cbc:IssueTime>
+    <cbc:InvoiceTypeCode name="{{{invoice_code}}}">{{{invoice_type}}}</cbc:InvoiceTypeCode>
     <cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>
     <cbc:TaxCurrencyCode>SAR</cbc:TaxCurrencyCode>
-    SET_BILLING_REFERENCE
+    {{#cancelation}}
+    <cac:BillingReference>
+        <cac:InvoiceDocumentReference>
+            <cbc:ID>{{{cancelation.canceled_serial_invoice_number}}}</cbc:ID>
+        </cac:InvoiceDocumentReference>
+    </cac:BillingReference>
+    {{/cancelation}}
     <cac:AdditionalDocumentReference>
         <cbc:ID>ICV</cbc:ID>
-        <cbc:UUID>SET_INVOICE_COUNTER_NUMBER</cbc:UUID>
+        <cbc:UUID>{{{invoice_counter_number}}}</cbc:UUID>
     </cac:AdditionalDocumentReference>
     <cac:AdditionalDocumentReference>
         <cbc:ID>PIH</cbc:ID>
         <cac:Attachment>
-            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">SET_PREVIOUS_INVOICE_HASH</cbc:EmbeddedDocumentBinaryObject>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">{{{previous_invoice_hash}}}</cbc:EmbeddedDocumentBinaryObject>
         </cac:Attachment>
     </cac:AdditionalDocumentReference>
     <cac:AdditionalDocumentReference>
@@ -45,113 +52,174 @@ const template = /* XML */`
     <cac:AccountingSupplierParty>
     <cac:Party>
       <cac:PartyIdentification>
-        <cbc:ID schemeID="CRN">SET_COMMERCIAL_REGISTRATION_NUMBER</cbc:ID>
+        <cbc:ID schemeID="CRN">{{{egs_info.CRN_number}}}</cbc:ID>
       </cac:PartyIdentification>
       <cac:PostalAddress>
-        <cbc:StreetName>SET_STREET_NAME</cbc:StreetName>
-        <cbc:BuildingNumber>SET_BUILDING_NUMBER</cbc:BuildingNumber>
-        <cbc:PlotIdentification>SET_PLOT_IDENTIFICATION</cbc:PlotIdentification>
-        <cbc:CitySubdivisionName>SET_CITY_SUBDIVISION</cbc:CitySubdivisionName>
-        <cbc:CityName>SET_CITY</cbc:CityName>
-        <cbc:PostalZone>SET_POSTAL_NUMBER</cbc:PostalZone>
+        <cbc:StreetName>{{{egs_info.location.street}}}</cbc:StreetName>
+        <cbc:BuildingNumber>{{{egs_info.location.building}}}</cbc:BuildingNumber>
+        <cbc:PlotIdentification>{{{egs_info.location.plot_identification}}}</cbc:PlotIdentification>
+        <cbc:CitySubdivisionName>{{{egs_info.location.city_subdivision}}}</cbc:CitySubdivisionName>
+        <cbc:CityName>{{{egs_info.location.city}}}</cbc:CityName>
+        <cbc:PostalZone>{{{egs_info.location.postal_zone}}}</cbc:PostalZone>
         <cac:Country>
           <cbc:IdentificationCode>SA</cbc:IdentificationCode>
         </cac:Country>
       </cac:PostalAddress>
       <cac:PartyTaxScheme>
-        <cbc:CompanyID>SET_VAT_NUMBER</cbc:CompanyID>
+        <cbc:CompanyID>{{{egs_info.VAT_number}}}</cbc:CompanyID>
         <cac:TaxScheme>
           <cbc:ID>VAT</cbc:ID>
         </cac:TaxScheme>
       </cac:PartyTaxScheme>
       <cac:PartyLegalEntity>
-        <cbc:RegistrationName>SET_VAT_NAME</cbc:RegistrationName>
+        <cbc:RegistrationName>{{{egs_info.VAT_name}}}</cbc:RegistrationName>
       </cac:PartyLegalEntity>
     </cac:Party>
   </cac:AccountingSupplierParty>
-  <cac:AccountingCustomerParty></cac:AccountingCustomerParty>
-</Invoice>
-`;
+  <cac:AccountingCustomerParty>
+  {{#egs_info.customer_info}}
+    <cac:Party>
+        <cac:PartyIdentification>
+          <cbc:ID schemeID="CRN">{{{egs_info.customer_info.CRN_number}}}</cbc:ID>
+        </cac:PartyIdentification>
+        <cac:PostalAddress>
+            <cbc:StreetName>{{{egs_info.customer_info.street}}}</cbc:StreetName>
+            <cbc:AdditionalStreetName>{{{egs_info.customer_info.additional_street}}}</cbc:AdditionalStreetName>
+            <cbc:BuildingNumber>{{{egs_info.customer_info.building}}}</cbc:BuildingNumber>
+            <cbc:PlotIdentification>{{{plot_identification}}}</cbc:PlotIdentification>
+            <cbc:CitySubdivisionName>{{{egs_info.customer_info.city_subdivision}}}</cbc:CitySubdivisionName>
+            <cbc:CityName>{{{egs_info.customer_info.city}}}</cbc:CityName>
+            <cbc:PostalZone>{{{egs_info.customer_info.postal_zone}}}</cbc:PostalZone>
+            <cbc:CountrySubentity>{{{egs_info.customer_info.country_sub_entity}}}</cbc:CountrySubentity>
+            <cac:Country>
+                <cbc:IdentificationCode>SA</cbc:IdentificationCode>
+            </cac:Country>
+        </cac:PostalAddress>
+        {{#egs_info.customer_info.vat_number}}
+        <cac:PartyTaxScheme>
+          <cbc:CompanyID>{{{egs_info.customer_info.vat_number}}}</cbc:CompanyID>
+          <cac:TaxScheme>
+            <cbc:ID>VAT</cbc:ID>
+          </cac:TaxScheme>
+        </cac:PartyTaxScheme>
+        {{/egs_info.customer_info.vat_number}}
+        <cac:PartyLegalEntity>
+            <cbc:RegistrationName>{{{egs_info.customer_info.buyer_name}}}</cbc:RegistrationName>
+        </cac:PartyLegalEntity>
+    </cac:Party>
+  {{/egs_info.customer_info}}
+  </cac:AccountingCustomerParty>
+  {{#actual_delivery_date}}
+  <cac:Delivery>
+    <cbc:ActualDeliveryDate>{{{actual_delivery_date}}}</cbc:ActualDeliveryDate>
+    {{#latest_delivery_date}}
+    <cbc:LatestDeliveryDate>{{{latest_delivery_date}}}</cbc:LatestDeliveryDate>
+    {{/latest_delivery_date}}
+  </cac:Delivery>
+  {{/actual_delivery_date}}
+  {{^cancelation}}
+  {{#payment_method}}
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>{{{payment_method}}}</cbc:PaymentMeansCode>
+  </cac:PaymentMeans>
+  {{/payment_method}}
+  {{/cancelation}}
+</Invoice>`;
 
 // 11.2.5 Payment means type code
 export enum ZATCAPaymentMethods {
-    CASH="10",
-    CREDIT="30",
-    BANK_ACCOUNT="42",
-    BANK_CARD="48"
+  CASH="10",
+  CREDIT="30",
+  BANK_ACCOUNT="42",
+  BANK_CARD="48"
 }
 
 export enum ZATCAInvoiceTypes{
-    INVOICE="388",
-    DEBIT_NOTE="383",
-    CREDIT_NOTE="381"
+  INVOICE="388",
+  DEBIT_NOTE="383",
+  CREDIT_NOTE="381"
 }
 
-export interface ZATCASimplifiedInvoiceLineItemDiscount {
-    amount: number,
-    reason: string
+export interface ZATCAInvoiceLineItemDiscount {
+  amount: number,
+  reason: string
 }
 
-export interface ZATCASimplifiedInvoiceLineItemTax {
-    percent_amount: number
+export interface ZATCAInvoiceLineItemTax {
+  percent_amount: number
 }
 
-export interface ZATCASimplifiedInvoiceLineItem {
-    id: string,
-    name: string,
-    quantity: number,
-    tax_exclusive_price: number,
-    other_taxes?: ZATCASimplifiedInvoiceLineItemTax[],
-    discounts?: ZATCASimplifiedInvoiceLineItemDiscount[]
-    VAT_percent: number,
+interface InvoiceLineItem {
+  id: string;
+  name: string;
+  quantity: number;
+  tax_exclusive_price: number;
+  other_taxes?: ZATCAInvoiceLineItemTax[];
+  discounts?: ZATCAInvoiceLineItemDiscount[]
 }
 
-export interface ZATCASimplifiedInvoicCancelation{
-    canceled_invoice_number: number,
-    payment_method: ZATCAPaymentMethods,
-    cancelation_type: ZATCAInvoiceTypes,
-    reason: string
+type ZeroTaxLineItem = InvoiceLineItem & {
+  VAT_percent: 0;
+  vat_category: { 
+    code: "O" | "Z" | "E";
+    reason_code: string; 
+    reason: string 
+  }
 }
 
-export interface ZATCASimplifiedInvoiceProps {
-    egs_info: EGSUnitInfo,
-    invoice_counter_number: number,
-    invoice_serial_number: string,
-    issue_date: string,
-    issue_time: string,
-    previous_invoice_hash: string,
-    line_items?: ZATCASimplifiedInvoiceLineItem[],
-    cancelation?: ZATCASimplifiedInvoicCancelation
+type LineItem = InvoiceLineItem & {
+  VAT_percent: 0.15 | 0.05
 }
 
-export default function populate(props: ZATCASimplifiedInvoiceProps): string {
-    let populated_template = template;
+export type ZATCAInvoiceLineItem = LineItem | ZeroTaxLineItem
 
-    populated_template = populated_template.replace("SET_INVOICE_TYPE", props.cancelation ? props.cancelation.cancelation_type : ZATCAInvoiceTypes.INVOICE);
-    // if canceled (BR-KSA-56) set reference number to canceled invoice
-    if(props.cancelation) {
-        populated_template = populated_template.replace("SET_BILLING_REFERENCE", defaultBillingReference(props.cancelation.canceled_invoice_number));
-    } else {
-        populated_template = populated_template.replace("SET_BILLING_REFERENCE", "");
-    }
+export interface ZATCAInvoicCancelation {
+  canceled_serial_invoice_number: string;
+  payment_method: ZATCAPaymentMethods;
+  cancelation_type: ZATCAInvoiceTypes;
+  reason: string;
+}
 
+interface ZatcaInvoice{
+  egs_info: EGSUnitInfo;
+  invoice_counter_number: number;
+  invoice_serial_number: string;
+  issue_date: string;
+  issue_time: string;
+  previous_invoice_hash: string;
+  line_items: ZATCAInvoiceLineItem[];
+}
 
-    populated_template = populated_template.replace("SET_INVOICE_SERIAL_NUMBER", props.invoice_serial_number);
-    populated_template = populated_template.replace("SET_TERMINAL_UUID", props.egs_info.uuid);
-    populated_template = populated_template.replace("SET_ISSUE_DATE", props.issue_date);
-    populated_template = populated_template.replace("SET_ISSUE_TIME", props.issue_time);
-    populated_template = populated_template.replace("SET_PREVIOUS_INVOICE_HASH", props.previous_invoice_hash);
-    populated_template = populated_template.replace("SET_INVOICE_COUNTER_NUMBER", props.invoice_counter_number.toString());
-    populated_template = populated_template.replace("SET_COMMERCIAL_REGISTRATION_NUMBER", props.egs_info.CRN_number);
-
-    populated_template = populated_template.replace("SET_STREET_NAME", props.egs_info.location.street);
-    populated_template = populated_template.replace("SET_BUILDING_NUMBER", props.egs_info.location.building);
-    populated_template = populated_template.replace("SET_PLOT_IDENTIFICATION", props.egs_info.location.plot_identification);
-    populated_template = populated_template.replace("SET_CITY_SUBDIVISION", props.egs_info.location.city_subdivision);
-    populated_template = populated_template.replace("SET_CITY", props.egs_info.location.city);
-    populated_template = populated_template.replace("SET_POSTAL_NUMBER", props.egs_info.location.postal_zone);
-
-    populated_template = populated_template.replace("SET_VAT_NUMBER", props.egs_info.VAT_number);
-    populated_template = populated_template.replace("SET_VAT_NAME", props.egs_info.VAT_name);
-    return populated_template;
+type CreditDebitInvoice = ZatcaInvoice & {
+  invoice_type: ZATCAInvoiceTypes.CREDIT_NOTE | ZATCAInvoiceTypes.DEBIT_NOTE;
+  cancelation: ZATCAInvoicCancelation;
+  actual_delivery_date?: string;
+  latest_delivery_date?: string;
 };
+
+type CashInvoice = ZatcaInvoice & {
+  invoice_type: ZATCAInvoiceTypes.INVOICE;
+  actual_delivery_date: string;
+  latest_delivery_date?: string;
+  payment_method?: "10" | "30" | "42" | "48"; // CASH="10", CREDIT="30", BANK_ACCOUNT="42", BANK_CARD="48"
+};
+
+type TaxInvoice = (CashInvoice | CreditDebitInvoice) & {
+  invoice_code: "0100000";
+};
+
+type SimplifiedInvoice = (CashInvoice | CreditDebitInvoice) & {
+  invoice_code: "0200000";
+};
+
+export type ZATCAInvoiceProps = SimplifiedInvoice | TaxInvoice;
+
+const rendering = (props: ZATCAInvoiceProps): string => {
+  let result = render(template, props);
+  return result;
+};
+
+export default function populate(props: ZATCAInvoiceProps): string {
+  const populated_template = rendering(props);
+  return populated_template;
+}

@@ -39,7 +39,7 @@ export const generateQR = ({invoice_xml, digital_signature, public_key, certific
     const invoice_type = invoice_xml.get("Invoice/cbc:InvoiceTypeCode")?.[0]["@_name"].toString();
 
     const datetime = `${issue_date} ${issue_time}`;
-    const formatted_datetime = moment(datetime).format("YYYY-MM-DDTHH:mm:ss")+"Z";
+    const formatted_datetime = moment(datetime).format("YYYY-MM-DDTHH:mm:ss");
     
     const qr_tlv = TLV([
         seller_name,
@@ -75,7 +75,7 @@ export const generateQR = ({invoice_xml, digital_signature, public_key, certific
     const issue_time = invoice_xml.get("Invoice/cbc:IssueTime")?.[0];
 
     const datetime = `${issue_date} ${issue_time}`;
-    const formatted_datetime = moment(datetime).format("YYYY-MM-DDTHH:mm:ss")+"Z";
+    const formatted_datetime = moment(datetime).format("YYYY-MM-DDTHH:mm:ss");
     
     const qr_tlv = TLV([
         seller_name,
