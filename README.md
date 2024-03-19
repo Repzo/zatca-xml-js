@@ -1,7 +1,7 @@
 <div align="center">
   <br/>
   <img src="./docs/logo.png"/>
-  <p>v0.1.9 (experimental)</p>
+  <p>v0.1.0 (Alpha Release)</p>
   <br/>
   <br/>
   <p>
@@ -12,9 +12,9 @@
   <br/>
   <p>
   
-[![GitHub license](https://badgen.net/github/license/wes4m/zatca-xml-js?v=0.1.0)](https://github.com/wes4m/zatca-xml-js/blob/main/LICENSE)
-    <a href="https://github.com/wes4m">
-        <img src="https://img.shields.io/badge/maintainer-wes4m-blue"/>
+[![GitHub license](https://badgen.net/github/license/Repzo/zatca-xml-js?v=0.1.0)](https://github.com/Repzo/zatca-xml-js/blob/main/LICENSE)
+    <a href="https://github.com/Repzo">
+        <img src="https://img.shields.io/badge/maintainer-Repzo-blue"/>
     </a>
     <a href="https://badge.fury.io/js/zatca-xml-js">
       <img src="https://badge.fury.io/js/zatca-xml-js.svg/?v=0.1.9"/>
@@ -115,4 +115,4 @@ All contributions are appreciated.
 - Getting ZATCA to hopefully minify the XMLs before hashing ?
 
 
-I'm not planning on supporting `Tax Invoices` (Not simplified ones). If any one wants to tackle that part.
+
