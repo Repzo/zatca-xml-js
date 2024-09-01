@@ -14,26 +14,26 @@ import API from "../api";
 import { ZATCAInvoice } from "../ZATCASimplifiedTaxInvoice";
 
 export interface EGSUnitLocation {
-    city: string,
-    city_subdivision: string,
-    street: string,
-    plot_identification: string,
-    building: string,
-    postal_zone: string
+  city?: string;
+  city_subdivision?: string;
+  street?: string;
+  plot_identification?: string;
+  building?: string;
+  postal_zone?: string;
 }
 
 export interface EGSUnitCustomerInfo {
-    city?: string;
-    city_subdivision?: string;
-    street?: string;
-    additional_street?: string;
-    plot_identification?: string;
-    building?: string;
-    postal_zone?: string;
-    country_sub_entity?: string;
-    buyer_name?: string;
-    customer_crn_number?: string;
-    vat_number?: string;
+  city?: string;
+  city_subdivision?: string;
+  street?: string;
+  additional_street?: string;
+  plot_identification?: string;
+  building?: string;
+  postal_zone?: string;
+  country_sub_entity?: string;
+  buyer_name: string;
+  customer_crn_number?: string;
+  vat_number?: string;
 }
 
 export interface EGSUnitInfo {
@@ -45,7 +45,7 @@ export interface EGSUnitInfo {
     VAT_number: string,
     branch_name: string,
     branch_industry: string,
-    location: EGSUnitLocation,
+    location?: EGSUnitLocation,
     customer_info?: EGSUnitCustomerInfo,
     private_key?: string,
     csr?: string,
@@ -106,7 +106,7 @@ const generateCSR = async (egs_info: EGSUnitInfo, production: boolean, solution_
         egs_serial_number: egs_info.uuid,
         solution_name: solution_name,
         vat_number: egs_info.VAT_number,
-        branch_location: `${egs_info.location.building} ${egs_info.location.street}, ${egs_info.location.city}`,
+        branch_location: `${egs_info.location?.building} ${egs_info.location?.street}, ${egs_info.location?.city}`,
         branch_industry: egs_info.branch_industry,
         branch_name: egs_info.branch_name,
         taxpayer_name: egs_info.VAT_name,
