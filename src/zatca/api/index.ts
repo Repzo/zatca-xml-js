@@ -166,25 +166,31 @@ class API {
                 "Clearance-Status": "0"
             };
 
-            const response = await axios.post(`${base_url}/invoices/reporting/single`,
-                {
-                    invoiceHash: invoice_hash,
-                    uuid: egs_uuid,
-                    invoice: Buffer.from(signed_xml_string).toString("base64")
-                },
-                {headers: {...auth_headers, ...headers}}
-            );
-                        
-            if (response.status != 200) throw new Error("Error in reporting invoice.");
-            return response.data;
-        }
+      const response = await axios.post(
+        `${base_url}/invoices/reporting/single`,
+        {
+          invoiceHash: invoice_hash,
+          uuid: egs_uuid,
+          invoice: Buffer.from(signed_xml_string).toString("base64"),
+        },
+        { headers: { ...auth_headers, ...headers } }
+      );
 
-        const clearanceInvoice = async (signed_xml_string: string, invoice_hash: string, egs_uuid: string): Promise<any> => {
-            const headers = {
-                "Accept-Version": settings.API_VERSION,
-                "Accept-Language": "en",
-                "Clearance-Status": "1",
-            };
+      if (response.status != 200 && response.status !== 202)
+        throw new Error("Error in reporting invoice.");
+      return response.data;
+    };
+
+    const clearanceInvoice = async (
+      signed_xml_string: string,
+      invoice_hash: string,
+      egs_uuid: string
+    ): Promise<any> => {
+      const headers = {
+        "Accept-Version": settings.API_VERSION,
+        "Accept-Language": "en",
+        "Clearance-Status": "1",
+      };
 
             const response = await axios.post(`${base_url}/invoices/clearance/single`,
               {
@@ -195,17 +201,16 @@ class API {
               { headers: { ...auth_headers, ...headers } }
           );
 
-          if (response.status != 200) throw new Error("Error in clearance invoice.");
-          return response.data;
-      }
-        return {
-            issueCertificate,
-            reportInvoice,
-            clearanceInvoice
-        }
-    }
-  
-
+      if (response.status != 200 && response.status !== 202)
+        throw new Error("Error in clearance invoice.");
+      return response.data;
+    };
+    return {
+      issueCertificate,
+      reportInvoice,
+      clearanceInvoice,
+    };
+  }
 }
 
 export default API;

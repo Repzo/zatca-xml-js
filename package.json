@@ -1,6 +1,6 @@
 {
   "name": "zatca-xml-js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An implementation of Saudi Arabia ZATCA's E-Invoicing requirements, processes, and standards.",
   "main": "lib/index.js",
   "files": [
@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
     "example": "tsc --project tsconfig.build.json && node lib/examples/full.js",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "lint": "npx prettier@2.8.8 --write ."
   },
   "devDependencies": {
     "@types/lodash": "^4.14.184",
@@ -22,6 +23,7 @@
     "@fidm/x509": "^1.2.1",
     "@types/mustache": "^4.2.5",
     "axios": "^0.27.2",
+    "decimal.js": "^10.4.3",
     "fast-xml-parser": "^4.0.9",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",

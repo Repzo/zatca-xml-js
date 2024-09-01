@@ -55,12 +55,24 @@ const template = /* XML */`
         <cbc:ID schemeID="CRN">{{{egs_info.CRN_number}}}</cbc:ID>
       </cac:PartyIdentification>
       <cac:PostalAddress>
+      {{#egs_info.location.street}}
         <cbc:StreetName>{{{egs_info.location.street}}}</cbc:StreetName>
+      {{/egs_info.location.street}}
+      {{#egs_info.location.building}}
         <cbc:BuildingNumber>{{{egs_info.location.building}}}</cbc:BuildingNumber>
+      {{/egs_info.location.building}}
+      {{#egs_info.location.plot_identification}}
         <cbc:PlotIdentification>{{{egs_info.location.plot_identification}}}</cbc:PlotIdentification>
+      {{/egs_info.location.plot_identification}}
+      {{#egs_info.location.city_subdivision}}
         <cbc:CitySubdivisionName>{{{egs_info.location.city_subdivision}}}</cbc:CitySubdivisionName>
+      {{/egs_info.location.city_subdivision}}
+      {{#egs_info.location.city}}
         <cbc:CityName>{{{egs_info.location.city}}}</cbc:CityName>
+      {{/egs_info.location.city}}
+      {{#egs_info.location.postal_zone}}
         <cbc:PostalZone>{{{egs_info.location.postal_zone}}}</cbc:PostalZone>
+      {{/egs_info.location.postal_zone}}
         <cac:Country>
           <cbc:IdentificationCode>SA</cbc:IdentificationCode>
         </cac:Country>
@@ -83,14 +95,30 @@ const template = /* XML */`
           <cbc:ID schemeID="CRN">{{{egs_info.customer_info.CRN_number}}}</cbc:ID>
         </cac:PartyIdentification>
         <cac:PostalAddress>
+          {{#egs_info.customer_info.street}}
             <cbc:StreetName>{{{egs_info.customer_info.street}}}</cbc:StreetName>
+          {{/egs_info.customer_info.street}}
+          {{#egs_info.customer_info.additional_street}}
             <cbc:AdditionalStreetName>{{{egs_info.customer_info.additional_street}}}</cbc:AdditionalStreetName>
+          {{/egs_info.customer_info.additional_street}}
+          {{#egs_info.customer_info.building}}
             <cbc:BuildingNumber>{{{egs_info.customer_info.building}}}</cbc:BuildingNumber>
-            <cbc:PlotIdentification>{{{plot_identification}}}</cbc:PlotIdentification>
+          {{/egs_info.customer_info.building}}
+          {{#egs_info.customer_info.plot_identification}}
+            <cbc:PlotIdentification>{{{egs_info.customer_info.plot_identification}}}</cbc:PlotIdentification>
+          {{/egs_info.customer_info.plot_identification}}
+          {{#egs_info.customer_info.city_subdivision}}
             <cbc:CitySubdivisionName>{{{egs_info.customer_info.city_subdivision}}}</cbc:CitySubdivisionName>
+          {{/egs_info.customer_info.city_subdivision}}
+          {{#egs_info.customer_info.city}}
             <cbc:CityName>{{{egs_info.customer_info.city}}}</cbc:CityName>
+          {{/egs_info.customer_info.city}}
+          {{#egs_info.customer_info.postal_zone}}
             <cbc:PostalZone>{{{egs_info.customer_info.postal_zone}}}</cbc:PostalZone>
+          {{/egs_info.customer_info.postal_zone}}
+          {{#egs_info.customer_info.country_sub_entity}}
             <cbc:CountrySubentity>{{{egs_info.customer_info.country_sub_entity}}}</cbc:CountrySubentity>
+          {{/egs_info.customer_info.country_sub_entity}}
             <cac:Country>
                 <cbc:IdentificationCode>SA</cbc:IdentificationCode>
             </cac:Country>
@@ -162,8 +190,8 @@ type ZeroTaxLineItem = InvoiceLineItem & {
   VAT_percent: 0;
   vat_category: { 
     code: "O" | "Z" | "E";
-    reason_code: string; 
-    reason: string 
+    reason_code?: string; 
+    reason?: string 
   }
 }
 
@@ -176,7 +204,6 @@ export type ZATCAInvoiceLineItem = LineItem | ZeroTaxLineItem
 export interface ZATCAInvoicCancelation {
   canceled_serial_invoice_number: string;
   payment_method: ZATCAPaymentMethods;
-  cancelation_type: ZATCAInvoiceTypes;
   reason: string;
 }
 
@@ -193,19 +220,18 @@ interface ZatcaInvoice{
 type CreditDebitInvoice = ZatcaInvoice & {
   invoice_type: ZATCAInvoiceTypes.CREDIT_NOTE | ZATCAInvoiceTypes.DEBIT_NOTE;
   cancelation: ZATCAInvoicCancelation;
-  actual_delivery_date?: string;
-  latest_delivery_date?: string;
 };
 
 type CashInvoice = ZatcaInvoice & {
   invoice_type: ZATCAInvoiceTypes.INVOICE;
-  actual_delivery_date: string;
+  actual_delivery_date?: string;
   latest_delivery_date?: string;
   payment_method?: "10" | "30" | "42" | "48"; // CASH="10", CREDIT="30", BANK_ACCOUNT="42", BANK_CARD="48"
 };
 
 type TaxInvoice = (CashInvoice | CreditDebitInvoice) & {
   invoice_code: "0100000";
+  actual_delivery_date?: string;
 };
 
 type SimplifiedInvoice = (CashInvoice | CreditDebitInvoice) & {
