@@ -81,6 +81,7 @@ const invoice = new ZATCAInvoice({
     line_items: [line_item_1, line_item_2, line_item_3],
     actual_delivery_date: "2024-02-29",
   },
+  acceptWarning: true,
 });
 
 const main = async () => {
