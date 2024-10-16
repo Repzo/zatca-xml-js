@@ -5,7 +5,6 @@ import {
 } from "../zatca/templates/simplified_tax_invoice_template";
 import { ZATCAInvoice } from "../zatca/ZATCASimplifiedTaxInvoice";
 
-
 // Sample line items
 const line_item_1: ZATCAInvoiceLineItem = {
   id: "1",

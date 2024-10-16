@@ -1,4 +1,4 @@
-const template = /* XML */`
+const template = /* XML */ `
     <ext:UBLExtension>
         <ext:ExtensionURI>urn:oasis:names:specification:ubl:dsig:enveloped:xades</ext:ExtensionURI>
         <ext:ExtensionContent>
@@ -62,19 +62,33 @@ const template = /* XML */`
         </ext:ExtensionContent>
     </ext:UBLExtension>`;
 
-
 export default function populate(
-    invoice_hash: string,
-    signed_properties_hash: string,
-    digital_signature: string,
-    certificate_string: string,
-    signed_properties_xml: string
+  invoice_hash: string,
+  signed_properties_hash: string,
+  digital_signature: string,
+  certificate_string: string,
+  signed_properties_xml: string
 ): string {
-    let populated_template = template;
-    populated_template = populated_template.replace("SET_INVOICE_HASH", invoice_hash);
-    populated_template = populated_template.replace("SET_SIGNED_PROPERTIES_HASH", signed_properties_hash);
-    populated_template = populated_template.replace("SET_DIGITAL_SIGNATURE", digital_signature);
-    populated_template = populated_template.replace("SET_CERTIFICATE", certificate_string);
-    populated_template = populated_template.replace("SET_SIGNED_PROPERTIES_XML", signed_properties_xml);
-    return populated_template;
-};
+  let populated_template = template;
+  populated_template = populated_template.replace(
+    "SET_INVOICE_HASH",
+    invoice_hash
+  );
+  populated_template = populated_template.replace(
+    "SET_SIGNED_PROPERTIES_HASH",
+    signed_properties_hash
+  );
+  populated_template = populated_template.replace(
+    "SET_DIGITAL_SIGNATURE",
+    digital_signature
+  );
+  populated_template = populated_template.replace(
+    "SET_CERTIFICATE",
+    certificate_string
+  );
+  populated_template = populated_template.replace(
+    "SET_SIGNED_PROPERTIES_XML",
+    signed_properties_xml
+  );
+  return populated_template;
+}

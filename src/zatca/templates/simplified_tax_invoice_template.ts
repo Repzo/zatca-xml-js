@@ -4,13 +4,13 @@ import defaultBillingReference from "./invoice_billing_reference_template";
 
 /**
  * Maybe use a templating engine instead of str replace.
- * This works for now though 
- * 
+ * This works for now though
+ *
  * cbc:InvoiceTypeCode: 388: BR-KSA-05 Tax Invoice according to UN/CEFACT codelist 1001, D.16B for KSA.
  *  name="0211010": BR-KSA-06 starts with "02" Simplified Tax Invoice. Also explains other positions.
  * cac:AdditionalDocumentReference: ICV: KSA-16, BR-KSA-33 (Invoice Counter number)
  */
-const template = /* XML */`
+const template = /* XML */ `
 <?xml version="1.0" encoding="UTF-8"?>
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"><ext:UBLExtensions>SET_UBL_EXTENSIONS_STRING</ext:UBLExtensions>
     
@@ -156,25 +156,25 @@ const template = /* XML */`
 
 // 11.2.5 Payment means type code
 export enum ZATCAPaymentMethods {
-  CASH="10",
-  CREDIT="30",
-  BANK_ACCOUNT="42",
-  BANK_CARD="48"
+  CASH = "10",
+  CREDIT = "30",
+  BANK_ACCOUNT = "42",
+  BANK_CARD = "48",
 }
 
-export enum ZATCAInvoiceTypes{
-  INVOICE="388",
-  DEBIT_NOTE="383",
-  CREDIT_NOTE="381"
+export enum ZATCAInvoiceTypes {
+  INVOICE = "388",
+  DEBIT_NOTE = "383",
+  CREDIT_NOTE = "381",
 }
 
 export interface ZATCAInvoiceLineItemDiscount {
-  amount: number,
-  reason: string
+  amount: number;
+  reason: string;
 }
 
 export interface ZATCAInvoiceLineItemTax {
-  percent_amount: number
+  percent_amount: number;
 }
 
 interface InvoiceLineItem {
@@ -183,23 +183,23 @@ interface InvoiceLineItem {
   quantity: number;
   tax_exclusive_price: number;
   other_taxes?: ZATCAInvoiceLineItemTax[];
-  discounts?: ZATCAInvoiceLineItemDiscount[]
+  discounts?: ZATCAInvoiceLineItemDiscount[];
 }
 
 type ZeroTaxLineItem = InvoiceLineItem & {
   VAT_percent: 0;
-  vat_category: { 
+  vat_category: {
     code: "O" | "Z" | "E";
-    reason_code?: string; 
-    reason?: string 
-  }
-}
+    reason_code?: string;
+    reason?: string;
+  };
+};
 
 type LineItem = InvoiceLineItem & {
-  VAT_percent: 0.15 | 0.05
-}
+  VAT_percent: 0.15 | 0.05;
+};
 
-export type ZATCAInvoiceLineItem = LineItem | ZeroTaxLineItem
+export type ZATCAInvoiceLineItem = LineItem | ZeroTaxLineItem;
 
 export interface ZATCAInvoicCancelation {
   canceled_serial_invoice_number: string;
@@ -207,7 +207,7 @@ export interface ZATCAInvoicCancelation {
   reason: string;
 }
 
-interface ZatcaInvoice{
+interface ZatcaInvoice {
   egs_info: EGSUnitInfo;
   invoice_counter_number: number;
   invoice_serial_number: string;

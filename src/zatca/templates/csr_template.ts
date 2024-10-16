@@ -54,32 +54,57 @@ organizationName = SET_TAXPAYER_NAME
 countryName = SA
 `;
 
-
 interface CSRConfigProps {
-    private_key_pass?: string,
-    production?: boolean,
-    egs_model: string,
-    egs_serial_number: string,
-    solution_name: string,
-    vat_number: string,
-    branch_location: string,
-    branch_industry: string,
-    branch_name: string,
-    taxpayer_name: string,
-    taxpayer_provided_id: string
-
+  private_key_pass?: string;
+  production?: boolean;
+  egs_model: string;
+  egs_serial_number: string;
+  solution_name: string;
+  vat_number: string;
+  branch_location: string;
+  branch_industry: string;
+  branch_name: string;
+  taxpayer_name: string;
+  taxpayer_provided_id: string;
 }
 export default function populate(props: CSRConfigProps): string {
-    let populated_template = template;
-    populated_template = populated_template.replace("SET_PRIVATE_KEY_PASS", props.private_key_pass ?? "SET_PRIVATE_KEY_PASS");
-    populated_template = populated_template.replace("SET_PRODUCTION_VALUE",  "PREZATCA-Code-Signing");
-    populated_template = populated_template.replace("SET_EGS_SERIAL_NUMBER", `1-${props.solution_name}|2-${props.egs_model}|3-${props.egs_serial_number}`);
-    populated_template = populated_template.replace("SET_VAT_REGISTRATION_NUMBER", props.vat_number);
-    populated_template = populated_template.replace("SET_BRANCH_LOCATION", props.branch_location);
-    populated_template = populated_template.replace("SET_BRANCH_INDUSTRY", props.branch_industry);
-    populated_template = populated_template.replace("SET_COMMON_NAME", props.taxpayer_provided_id);
-    populated_template = populated_template.replace("SET_BRANCH_NAME", props.branch_name);
-    populated_template = populated_template.replace("SET_TAXPAYER_NAME", props.taxpayer_name);
+  let populated_template = template;
+  populated_template = populated_template.replace(
+    "SET_PRIVATE_KEY_PASS",
+    props.private_key_pass ?? "SET_PRIVATE_KEY_PASS"
+  );
+  populated_template = populated_template.replace(
+    "SET_PRODUCTION_VALUE",
+    "PREZATCA-Code-Signing"
+  );
+  populated_template = populated_template.replace(
+    "SET_EGS_SERIAL_NUMBER",
+    `1-${props.solution_name}|2-${props.egs_model}|3-${props.egs_serial_number}`
+  );
+  populated_template = populated_template.replace(
+    "SET_VAT_REGISTRATION_NUMBER",
+    props.vat_number
+  );
+  populated_template = populated_template.replace(
+    "SET_BRANCH_LOCATION",
+    props.branch_location
+  );
+  populated_template = populated_template.replace(
+    "SET_BRANCH_INDUSTRY",
+    props.branch_industry
+  );
+  populated_template = populated_template.replace(
+    "SET_COMMON_NAME",
+    props.taxpayer_provided_id
+  );
+  populated_template = populated_template.replace(
+    "SET_BRANCH_NAME",
+    props.branch_name
+  );
+  populated_template = populated_template.replace(
+    "SET_TAXPAYER_NAME",
+    props.taxpayer_name
+  );
 
-    return populated_template;
-};
+  return populated_template;
+}

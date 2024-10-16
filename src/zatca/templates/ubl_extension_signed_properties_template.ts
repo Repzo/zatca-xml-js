@@ -1,4 +1,4 @@
-const template = /* XML */`<xades:SignedProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Id="xadesSignedProperties">
+const template = /* XML */ `<xades:SignedProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Id="xadesSignedProperties">
                                     <xades:SignedSignatureProperties>
                                         <xades:SigningTime>SET_SIGN_TIMESTAMP</xades:SigningTime>
                                         <xades:SigningCertificate>
@@ -16,24 +16,39 @@ const template = /* XML */`<xades:SignedProperties xmlns:xades="http://uri.etsi.
                                     </xades:SignedSignatureProperties>
                                 </xades:SignedProperties>`;
 
-
 interface SignedPropertiesProps {
-    sign_timestamp: string,
-    certificate_hash: string,
-    certificate_issuer: string,
-    certificate_serial_number: string
+  sign_timestamp: string;
+  certificate_hash: string;
+  certificate_issuer: string;
+  certificate_serial_number: string;
 }
-export function defaultUBLExtensionsSignedPropertiesForSigning({sign_timestamp, certificate_hash, certificate_issuer, certificate_serial_number}: SignedPropertiesProps
-): string {
-    let populated_template = template;
-    populated_template = populated_template.replace("SET_SIGN_TIMESTAMP", sign_timestamp);
-    populated_template = populated_template.replace("SET_CERTIFICATE_HASH", certificate_hash);
-    populated_template = populated_template.replace("SET_CERTIFICATE_ISSUER", certificate_issuer);
-    populated_template = populated_template.replace("SET_CERTIFICATE_SERIAL_NUMBER", certificate_serial_number);
-    return populated_template;
-};
+export function defaultUBLExtensionsSignedPropertiesForSigning({
+  sign_timestamp,
+  certificate_hash,
+  certificate_issuer,
+  certificate_serial_number,
+}: SignedPropertiesProps): string {
+  let populated_template = template;
+  populated_template = populated_template.replace(
+    "SET_SIGN_TIMESTAMP",
+    sign_timestamp
+  );
+  populated_template = populated_template.replace(
+    "SET_CERTIFICATE_HASH",
+    certificate_hash
+  );
+  populated_template = populated_template.replace(
+    "SET_CERTIFICATE_ISSUER",
+    certificate_issuer
+  );
+  populated_template = populated_template.replace(
+    "SET_CERTIFICATE_SERIAL_NUMBER",
+    certificate_serial_number
+  );
+  return populated_template;
+}
 
-const template_after_signing = /* XML */`<xades:SignedProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Id="xadesSignedProperties">
+const template_after_signing = /* XML */ `<xades:SignedProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Id="xadesSignedProperties">
                                 <xades:SignedSignatureProperties>
                                     <xades:SigningTime>SET_SIGN_TIMESTAMP</xades:SigningTime>
                                     <xades:SigningCertificate>
@@ -51,13 +66,28 @@ const template_after_signing = /* XML */`<xades:SignedProperties xmlns:xades="ht
                                 </xades:SignedSignatureProperties>
                             </xades:SignedProperties>`;
 
-
-export default function populate({sign_timestamp, certificate_hash, certificate_issuer, certificate_serial_number}: SignedPropertiesProps
-): string {
-    let populated_template = template_after_signing;
-    populated_template = populated_template.replace("SET_SIGN_TIMESTAMP", sign_timestamp);
-    populated_template = populated_template.replace("SET_CERTIFICATE_HASH", certificate_hash);
-    populated_template = populated_template.replace("SET_CERTIFICATE_ISSUER", certificate_issuer);
-    populated_template = populated_template.replace("SET_CERTIFICATE_SERIAL_NUMBER", certificate_serial_number);
-    return populated_template;
-};
+export default function populate({
+  sign_timestamp,
+  certificate_hash,
+  certificate_issuer,
+  certificate_serial_number,
+}: SignedPropertiesProps): string {
+  let populated_template = template_after_signing;
+  populated_template = populated_template.replace(
+    "SET_SIGN_TIMESTAMP",
+    sign_timestamp
+  );
+  populated_template = populated_template.replace(
+    "SET_CERTIFICATE_HASH",
+    certificate_hash
+  );
+  populated_template = populated_template.replace(
+    "SET_CERTIFICATE_ISSUER",
+    certificate_issuer
+  );
+  populated_template = populated_template.replace(
+    "SET_CERTIFICATE_SERIAL_NUMBER",
+    certificate_serial_number
+  );
+  return populated_template;
+}
