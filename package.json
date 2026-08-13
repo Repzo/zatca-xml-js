@@ -1,46 +1,56 @@
 {
-  "name": "zatca-xml-ts",
-  "version": "0.1.5",
+  "name": "@pioneersoft/zatca-einvoice",
+  "version": "0.1.9",
   "description": "An implementation of Saudi Arabia ZATCA's E-Invoicing requirements, processes, and standards.",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "files": [
-    "lib/**/*"
+    "dist/**/*"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "example": "tsc --project tsconfig.build.json && node lib/examples/full.js",
+    "example": "tsc --project tsconfig.build.json && node dist/examples/full.js",
     "prepare": "npm run build",
+    "test": "tsc -p tsconfig.json && node --test dist/tests/calc-totals.test.js",
     "lint": "npx prettier@2.8.8 --write ."
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.184",
-    "@types/node": "^18.7.16",
-    "@types/uuid": "^8.3.4",
-    "@types/xmldom": "^0.1.31",
-    "typescript": "^4.8.3"
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^25.7.0",
+    "@types/uuid": "^11.0.0",
+    "@types/xmldom": "^0.1.34",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@fidm/x509": "^1.2.1",
-    "@types/mustache": "^4.2.5",
-    "axios": "^0.27.2",
-    "decimal.js": "^10.4.3",
-    "fast-xml-parser": "^4.0.9",
-    "lodash": "^4.17.21",
-    "moment": "^2.29.4",
+    "@types/mustache": "^4.2.6",
+    "axios": "^1.16.1",
+    "decimal.js": "^10.6.0",
+    "fast-xml-builder": "^1.2.0",
+    "fast-xml-parser": "^5.8.0",
+    "lodash": "^4.18.1",
+    "moment": "^2.30.1",
     "mustache": "^4.2.0",
-    "uuid": "^9.0.0",
+    "uuid": "^14.0.0",
     "xmldom": "^0.6.0",
-    "xmldsigjs": "^2.5.0"
+    "xmldsigjs": "^2.8.7"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Repzo/zatca-xml-js"
+    "url": "git+https://github.com/PioneerSoft-sa/zatca-einvoice.git"
   },
-  "typings": "lib/index.d.ts",
+  "bugs": {
+    "url": "https://github.com/PioneerSoft-sa/zatca-einvoice/issues"
+  },
+  "homepage": "https://github.com/PioneerSoft-sa/zatca-einvoice#readme",
+  "typings": "dist/index.d.ts",
   "keywords": [
     "zatca",
+    "e-invoicing",
     "xml",
+    "ubl",
     "signing",
+    "xades",
+    "fatoora",
     "on-boarding",
     "EGS",
     "invoice",
@@ -51,6 +61,5 @@
     "phase 1",
     "phase 2"
   ],
-  "author": "Mohammad Alnatour",
   "license": "MIT"
 }

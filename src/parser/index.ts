@@ -1,4 +1,5 @@
-import { XMLBuilder, XmlBuilderOptions, XMLParser } from "fast-xml-parser";
+import { XMLParser, XmlBuilderOptions } from "fast-xml-parser";
+import XMLBuilder from "fast-xml-builder";
 import _ from "lodash";
 import { log } from "../logger";
 

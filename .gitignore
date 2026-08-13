@@ -109,3 +109,4 @@ dist
 /src/tests
 .DS_STORE
 package-lock.json
+.refact

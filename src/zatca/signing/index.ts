@@ -3,6 +3,7 @@ import xmldom from "xmldom";
 import { createHash, createSign, X509Certificate } from "crypto";
 import moment from "moment";
 import {Certificate} from "@fidm/x509";
+import { getCertificateBody, normalizeCertificatePem } from "../certificate";
 
 
 import { XMLDocument } from "../../parser";
@@ -86,7 +87,7 @@ export const createInvoiceDigitalSignature = (invoice_hash: string, private_key_
  */
 export const getCertificateInfo = (certificate_string: string): {hash: string, issuer: string, serial_number: string, public_key: Buffer, signature: Buffer} => {
     const cleanedup_certificate_string: string = cleanUpCertificateString(certificate_string);
-    const wrapped_certificate_string: string = `-----BEGIN CERTIFICATE-----\n${cleanedup_certificate_string}\n-----END CERTIFICATE-----`;
+    const wrapped_certificate_string: string = normalizeCertificatePem(certificate_string);
 
     const hash = getCertificateHash(cleanedup_certificate_string);
     const x509 = new X509Certificate(wrapped_certificate_string);  
@@ -115,7 +116,7 @@ export const getCertificateInfo = (certificate_string: string): {hash: string, i
  * @returns String base64 encoded certificate body.
  */
 export const cleanUpCertificateString = (certificate_string: string): string => {
-    return certificate_string.replace(`-----BEGIN CERTIFICATE-----\n`, "").replace("-----END CERTIFICATE-----", "").trim()
+    return getCertificateBody(certificate_string)
 }
 
 /**
@@ -131,8 +132,10 @@ export const cleanUpCertificateString = (certificate_string: string): string => 
 interface generateSignatureXMLParams {
     invoice_xml: XMLDocument,
     certificate_string: string,
-    private_key_string: string
+    private_key_string: string,
+    signing_timestamp?: string
 }
+
 /**
  * Main signing function.
  * @param invoice_xml XMLDocument of invoice to be signed.
@@ -140,8 +143,9 @@ interface generateSignatureXMLParams {
  * @param private_key_string String ec-secp256k1 private key;
  * @returns signed_invoice_string: string, invoice_hash: string, qr: string
  */
-export const generateSignedXMLString = ({invoice_xml, certificate_string, private_key_string}: generateSignatureXMLParams):
+export const generateSignedXMLString = ({invoice_xml, certificate_string, private_key_string, signing_timestamp}: generateSignatureXMLParams):
 {signed_invoice_string: string, invoice_hash: string, qr: string} => {
+
 
     const invoice_copy: XMLDocument = new XMLDocument(invoice_xml.toString({no_header: false}));
 
@@ -169,11 +173,12 @@ export const generateSignedXMLString = ({invoice_xml, certificate_string, privat
 
     // Set Signed properties
     const signed_properties_props = {
-        sign_timestamp: moment(new Date()).format("YYYY-MM-DDTHH:mm:ss")+"Z",
+        sign_timestamp: signing_timestamp ?? moment(new Date()).format("YYYY-MM-DDTHH:mm:ss")+"Z",
         certificate_hash: cert_info.hash,
         certificate_issuer: cert_info.issuer,
         certificate_serial_number: cert_info.serial_number
     };
+
     const ubl_signature_signed_properties_xml_string_for_signing = defaultUBLExtensionsSignedPropertiesForSigning(signed_properties_props);
     const ubl_signature_signed_properties_xml_string = defaultUBLExtensionsSignedProperties(signed_properties_props);
 

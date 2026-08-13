@@ -13,7 +13,8 @@
     "declaration": true,
     "declarationMap": true,
 
-    "outDir": "testing_lib"
+    "outDir": "dist",
+    "rootDir": "./src"
   },
 
   "include": ["src/**/*"]
