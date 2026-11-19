@@ -1,5 +1,5 @@
 import { XmlCanonicalizer } from "xmldsigjs";
-import xmldom from "xmldom";
+import { DOMParser } from "@xmldom/xmldom";
 import { createHash, createSign, X509Certificate } from "crypto";
 import moment from "moment";
 import {Certificate} from "@fidm/x509";
@@ -23,8 +23,9 @@ export const getPureInvoiceString = (invoice_xml: XMLDocument): string => {
     invoice_copy.delete("Invoice/cac:Signature");
     invoice_copy.delete("Invoice/cac:AdditionalDocumentReference", {"cbc:ID": "QR"});
 
-    const invoice_xml_dom = (new xmldom.DOMParser()).parseFromString(
-        invoice_copy.toString({no_header: false})
+    const invoice_xml_dom = new DOMParser().parseFromString(
+        invoice_copy.toString({no_header: false}),
+        "text/xml"
     );
     
     var canonicalizer = new XmlCanonicalizer(false, false);
@@ -169,7 +170,8 @@ export const generateSignedXMLString = ({invoice_xml, certificate_string, privat
 
     // Set Signed properties
     const signed_properties_props = {
-        sign_timestamp: moment(new Date()).format("YYYY-MM-DDTHH:mm:ss")+"Z",
+        // The "Z" suffix declares UTC, so the time must be formatted in UTC (not the server's local time zone).
+        sign_timestamp: moment.utc().format("YYYY-MM-DDTHH:mm:ss")+"Z",
         certificate_hash: cert_info.hash,
         certificate_issuer: cert_info.issuer,
         certificate_serial_number: cert_info.serial_number
