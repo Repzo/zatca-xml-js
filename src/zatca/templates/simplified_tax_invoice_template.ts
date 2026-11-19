@@ -15,28 +15,28 @@ const template = /* XML */`
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"><ext:UBLExtensions>SET_UBL_EXTENSIONS_STRING</ext:UBLExtensions>
     
     <cbc:ProfileID>reporting:1.0</cbc:ProfileID>
-    <cbc:ID>{{{invoice_serial_number}}}</cbc:ID>
-    <cbc:UUID>{{{egs_info.uuid}}}</cbc:UUID>
-    <cbc:IssueDate>{{{issue_date}}}</cbc:IssueDate>
-    <cbc:IssueTime>{{{issue_time}}}</cbc:IssueTime>
-    <cbc:InvoiceTypeCode name="{{{invoice_code}}}">{{{invoice_type}}}</cbc:InvoiceTypeCode>
+    <cbc:ID>{{invoice_serial_number}}</cbc:ID>
+    <cbc:UUID>{{egs_info.uuid}}</cbc:UUID>
+    <cbc:IssueDate>{{issue_date}}</cbc:IssueDate>
+    <cbc:IssueTime>{{issue_time}}</cbc:IssueTime>
+    <cbc:InvoiceTypeCode name="{{invoice_code}}">{{invoice_type}}</cbc:InvoiceTypeCode>
     <cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>
     <cbc:TaxCurrencyCode>SAR</cbc:TaxCurrencyCode>
     {{#cancelation}}
     <cac:BillingReference>
         <cac:InvoiceDocumentReference>
-            <cbc:ID>{{{cancelation.canceled_serial_invoice_number}}}</cbc:ID>
+            <cbc:ID>{{cancelation.canceled_serial_invoice_number}}</cbc:ID>
         </cac:InvoiceDocumentReference>
     </cac:BillingReference>
     {{/cancelation}}
     <cac:AdditionalDocumentReference>
         <cbc:ID>ICV</cbc:ID>
-        <cbc:UUID>{{{invoice_counter_number}}}</cbc:UUID>
+        <cbc:UUID>{{invoice_counter_number}}</cbc:UUID>
     </cac:AdditionalDocumentReference>
     <cac:AdditionalDocumentReference>
         <cbc:ID>PIH</cbc:ID>
         <cac:Attachment>
-            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">{{{previous_invoice_hash}}}</cbc:EmbeddedDocumentBinaryObject>
+            <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">{{previous_invoice_hash}}</cbc:EmbeddedDocumentBinaryObject>
         </cac:Attachment>
     </cac:AdditionalDocumentReference>
     <cac:AdditionalDocumentReference>
@@ -52,39 +52,39 @@ const template = /* XML */`
     <cac:AccountingSupplierParty>
     <cac:Party>
       <cac:PartyIdentification>
-        <cbc:ID schemeID="CRN">{{{egs_info.CRN_number}}}</cbc:ID>
+        <cbc:ID schemeID="CRN">{{egs_info.CRN_number}}</cbc:ID>
       </cac:PartyIdentification>
       <cac:PostalAddress>
       {{#egs_info.location.street}}
-        <cbc:StreetName>{{{egs_info.location.street}}}</cbc:StreetName>
+        <cbc:StreetName>{{egs_info.location.street}}</cbc:StreetName>
       {{/egs_info.location.street}}
       {{#egs_info.location.building}}
-        <cbc:BuildingNumber>{{{egs_info.location.building}}}</cbc:BuildingNumber>
+        <cbc:BuildingNumber>{{egs_info.location.building}}</cbc:BuildingNumber>
       {{/egs_info.location.building}}
       {{#egs_info.location.plot_identification}}
-        <cbc:PlotIdentification>{{{egs_info.location.plot_identification}}}</cbc:PlotIdentification>
+        <cbc:PlotIdentification>{{egs_info.location.plot_identification}}</cbc:PlotIdentification>
       {{/egs_info.location.plot_identification}}
       {{#egs_info.location.city_subdivision}}
-        <cbc:CitySubdivisionName>{{{egs_info.location.city_subdivision}}}</cbc:CitySubdivisionName>
+        <cbc:CitySubdivisionName>{{egs_info.location.city_subdivision}}</cbc:CitySubdivisionName>
       {{/egs_info.location.city_subdivision}}
       {{#egs_info.location.city}}
-        <cbc:CityName>{{{egs_info.location.city}}}</cbc:CityName>
+        <cbc:CityName>{{egs_info.location.city}}</cbc:CityName>
       {{/egs_info.location.city}}
       {{#egs_info.location.postal_zone}}
-        <cbc:PostalZone>{{{egs_info.location.postal_zone}}}</cbc:PostalZone>
+        <cbc:PostalZone>{{egs_info.location.postal_zone}}</cbc:PostalZone>
       {{/egs_info.location.postal_zone}}
         <cac:Country>
           <cbc:IdentificationCode>SA</cbc:IdentificationCode>
         </cac:Country>
       </cac:PostalAddress>
       <cac:PartyTaxScheme>
-        <cbc:CompanyID>{{{egs_info.VAT_number}}}</cbc:CompanyID>
+        <cbc:CompanyID>{{egs_info.VAT_number}}</cbc:CompanyID>
         <cac:TaxScheme>
           <cbc:ID>VAT</cbc:ID>
         </cac:TaxScheme>
       </cac:PartyTaxScheme>
       <cac:PartyLegalEntity>
-        <cbc:RegistrationName>{{{egs_info.VAT_name}}}</cbc:RegistrationName>
+        <cbc:RegistrationName>{{egs_info.VAT_name}}</cbc:RegistrationName>
       </cac:PartyLegalEntity>
     </cac:Party>
   </cac:AccountingSupplierParty>
@@ -92,32 +92,32 @@ const template = /* XML */`
   {{#egs_info.customer_info}}
     <cac:Party>
         <cac:PartyIdentification>
-          <cbc:ID schemeID="CRN">{{{egs_info.customer_info.CRN_number}}}</cbc:ID>
+          <cbc:ID schemeID="CRN">{{egs_info.customer_info.CRN_number}}</cbc:ID>
         </cac:PartyIdentification>
         <cac:PostalAddress>
           {{#egs_info.customer_info.street}}
-            <cbc:StreetName>{{{egs_info.customer_info.street}}}</cbc:StreetName>
+            <cbc:StreetName>{{egs_info.customer_info.street}}</cbc:StreetName>
           {{/egs_info.customer_info.street}}
           {{#egs_info.customer_info.additional_street}}
-            <cbc:AdditionalStreetName>{{{egs_info.customer_info.additional_street}}}</cbc:AdditionalStreetName>
+            <cbc:AdditionalStreetName>{{egs_info.customer_info.additional_street}}</cbc:AdditionalStreetName>
           {{/egs_info.customer_info.additional_street}}
           {{#egs_info.customer_info.building}}
-            <cbc:BuildingNumber>{{{egs_info.customer_info.building}}}</cbc:BuildingNumber>
+            <cbc:BuildingNumber>{{egs_info.customer_info.building}}</cbc:BuildingNumber>
           {{/egs_info.customer_info.building}}
           {{#egs_info.customer_info.plot_identification}}
-            <cbc:PlotIdentification>{{{egs_info.customer_info.plot_identification}}}</cbc:PlotIdentification>
+            <cbc:PlotIdentification>{{egs_info.customer_info.plot_identification}}</cbc:PlotIdentification>
           {{/egs_info.customer_info.plot_identification}}
           {{#egs_info.customer_info.city_subdivision}}
-            <cbc:CitySubdivisionName>{{{egs_info.customer_info.city_subdivision}}}</cbc:CitySubdivisionName>
+            <cbc:CitySubdivisionName>{{egs_info.customer_info.city_subdivision}}</cbc:CitySubdivisionName>
           {{/egs_info.customer_info.city_subdivision}}
           {{#egs_info.customer_info.city}}
-            <cbc:CityName>{{{egs_info.customer_info.city}}}</cbc:CityName>
+            <cbc:CityName>{{egs_info.customer_info.city}}</cbc:CityName>
           {{/egs_info.customer_info.city}}
           {{#egs_info.customer_info.postal_zone}}
-            <cbc:PostalZone>{{{egs_info.customer_info.postal_zone}}}</cbc:PostalZone>
+            <cbc:PostalZone>{{egs_info.customer_info.postal_zone}}</cbc:PostalZone>
           {{/egs_info.customer_info.postal_zone}}
           {{#egs_info.customer_info.country_sub_entity}}
-            <cbc:CountrySubentity>{{{egs_info.customer_info.country_sub_entity}}}</cbc:CountrySubentity>
+            <cbc:CountrySubentity>{{egs_info.customer_info.country_sub_entity}}</cbc:CountrySubentity>
           {{/egs_info.customer_info.country_sub_entity}}
             <cac:Country>
                 <cbc:IdentificationCode>SA</cbc:IdentificationCode>
@@ -125,30 +125,30 @@ const template = /* XML */`
         </cac:PostalAddress>
         {{#egs_info.customer_info.vat_number}}
         <cac:PartyTaxScheme>
-          <cbc:CompanyID>{{{egs_info.customer_info.vat_number}}}</cbc:CompanyID>
+          <cbc:CompanyID>{{egs_info.customer_info.vat_number}}</cbc:CompanyID>
           <cac:TaxScheme>
             <cbc:ID>VAT</cbc:ID>
           </cac:TaxScheme>
         </cac:PartyTaxScheme>
         {{/egs_info.customer_info.vat_number}}
         <cac:PartyLegalEntity>
-            <cbc:RegistrationName>{{{egs_info.customer_info.buyer_name}}}</cbc:RegistrationName>
+            <cbc:RegistrationName>{{egs_info.customer_info.buyer_name}}</cbc:RegistrationName>
         </cac:PartyLegalEntity>
     </cac:Party>
   {{/egs_info.customer_info}}
   </cac:AccountingCustomerParty>
   {{#actual_delivery_date}}
   <cac:Delivery>
-    <cbc:ActualDeliveryDate>{{{actual_delivery_date}}}</cbc:ActualDeliveryDate>
+    <cbc:ActualDeliveryDate>{{actual_delivery_date}}</cbc:ActualDeliveryDate>
     {{#latest_delivery_date}}
-    <cbc:LatestDeliveryDate>{{{latest_delivery_date}}}</cbc:LatestDeliveryDate>
+    <cbc:LatestDeliveryDate>{{latest_delivery_date}}</cbc:LatestDeliveryDate>
     {{/latest_delivery_date}}
   </cac:Delivery>
   {{/actual_delivery_date}}
   {{^cancelation}}
   {{#payment_method}}
   <cac:PaymentMeans>
-    <cbc:PaymentMeansCode>{{{payment_method}}}</cbc:PaymentMeansCode>
+    <cbc:PaymentMeansCode>{{payment_method}}</cbc:PaymentMeansCode>
   </cac:PaymentMeans>
   {{/payment_method}}
   {{/cancelation}}
@@ -240,8 +240,24 @@ type SimplifiedInvoice = (CashInvoice | CreditDebitInvoice) & {
 
 export type ZATCAInvoiceProps = SimplifiedInvoice | TaxInvoice;
 
+const XML_ESCAPES: { [char: string]: string } = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&apos;",
+};
+
+/**
+ * Escapes values inserted into the XML template so they are always treated as text
+ * (e.g. a name containing "<" can't break the XML or inject elements).
+ * Mustache's default escaper is HTML-oriented (it also escapes "/", "=" and "`"), so use XML escaping instead.
+ */
+const escapeXML = (value: unknown): string =>
+  String(value).replace(/[&<>"']/g, (char) => XML_ESCAPES[char]);
+
 const rendering = (props: ZATCAInvoiceProps): string => {
-  let result = render(template, props);
+  let result = render(template, props, undefined, { escape: escapeXML });
   return result;
 };
 
